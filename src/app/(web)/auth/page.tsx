@@ -32,7 +32,7 @@ const Auth = (props: Props) => {
             console.log(error);
             
         } finally{  
-            setFormData(defaultFormData)
+            setFormData(defaultFormData )
         }
     }
 
