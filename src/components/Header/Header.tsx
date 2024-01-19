@@ -12,6 +12,7 @@ type Props = {}
 const Header = (props: Props) => {
     const {setDarkTheme,darkTheme} = useContext(ThemeContext)
     const {data:session} = useSession()
+    const profileImg =  session?.user.image as string
   return (
     <header className='py-10 px-4 container mx-auto text-xl flex flex-wrap md:flex-nowrap items-center justify-between'>
         <div className='flex items-center w-full md:2/3'>
@@ -25,7 +26,7 @@ const Header = (props: Props) => {
                             <Link href={`/users/${session.user.id}`}>
                                 {session.user.image ? (
                                     <div className='relative h-[30px] w-[30px]'>
-                                        <Image alt='profile_pic' src={session.user.image} fill className='object-cover rounded-full'/>
+                                        <Image alt='profile_pic' src={profileImg} fill className='object-cover rounded-full'/>
                                     </div>
                                 ) : (
                                     <FaUserCircle className='cursor-pointer' />
