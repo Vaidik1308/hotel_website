@@ -29,7 +29,7 @@ const Search = (
 
         const handleFilterClick = () => {
             //navigate to the room page with query
-            router.push(`/rrom?rromType=${roomTypeFilter}&searchQuery=${searchQuery}`)
+            router.push(`/rooms?roomType=${roomTypeFilter}&searchQuery=${searchQuery}`)
         }
   return (
     <section className='bg-tertiary-light px-4 py-6 rounded-lg'>
