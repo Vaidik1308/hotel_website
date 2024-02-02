@@ -1,4 +1,5 @@
 'use client'
+import LoadSpinner from '@/components/LoadSpinner/LoadSpinner'
 import RoomCard from '@/components/RoomCard/RoomCard'
 import Search from '@/components/Search/Search'
 import { getRooms } from '@/libs/apis'
@@ -33,6 +34,7 @@ const Rooms = (props: Props) => {
     const {data,error,isLoading} = useSWR('get/hotelRooms',fetchData)
     if(error) throw new Error("Cannot fetch data")
     if(typeof data === 'undefined' && !isLoading) throw new Error("Cannot fetch data")
+    if(!data) return <LoadSpinner/>
 
   const filterRooms = (rooms:Room[]) => {
     return rooms.filter(room => {
