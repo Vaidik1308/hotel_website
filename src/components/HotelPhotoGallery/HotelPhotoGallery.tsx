@@ -24,7 +24,7 @@ const HotelPhotoGallery = ({photos}: {photos:ImageType[]}) => {
     setCurrentPhotoIndex((prev) => prev === photos.length -1 ? 0 : prev + 1 )
   }
 
-  const maximumVisiblePhotos = 3;
+  const maximumVisiblePhotos = 4;
   const totalPhotos =  photos.length
   const displayPhotos = photos.slice(1,maximumVisiblePhotos - 1)
   const remainingPhotosCount = totalPhotos - maximumVisiblePhotos;
@@ -100,8 +100,8 @@ const HotelPhotoGallery = ({photos}: {photos:ImageType[]}) => {
           ) }
         </div>
         {showModal && (
-          <div className='fixed top-10 w-full flex justify-center  bg-black bg-opacity-90 z-[55]'>
-            <div className='h-[75bh] w-[320px] md:w-[700px] relative '>
+          <div className='fixed top-0 h-full left-0 w-full flex justify-center items-center  bg-black bg-opacity-90 z-[55]'>
+            <div className='h-[70vh]  w-[320px] md:w-[700px] relative '>
               <Image 
                 src={photos[currentPhotoIndex].url} 
                 alt={`room phot ${currentPhotoIndex + 1}`}
@@ -109,7 +109,7 @@ const HotelPhotoGallery = ({photos}: {photos:ImageType[]}) => {
                 height={150}
                 className='img'
               />
-              <div className='md:flex hidden justify-between items-center py-3'>
+              <div className='flex  justify-between items-center py-3'>
                 <div className='flex space-x-2 items-center text-white'>
                   <FaArrowLeft 
                     className='cursor-pointer' 
