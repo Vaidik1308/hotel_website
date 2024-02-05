@@ -1,8 +1,10 @@
 'use client'
+import BookRoomCta from '@/components/BookRoomCta/BookRoomCta';
 import HotelPhotoGallery from '@/components/HotelPhotoGallery/HotelPhotoGallery';
 import LoadSpinner from '@/components/LoadSpinner/LoadSpinner';
 import { getRoom } from '@/libs/apis';
-import React from 'react'
+import React, { useState } from 'react'
+import toast from 'react-hot-toast';
 import { AiOutlineMedicineBox } from 'react-icons/ai';
 import { GiSmokeBomb } from 'react-icons/gi';
 import { LiaFireExtinguisherSolid } from 'react-icons/lia';
@@ -12,15 +14,49 @@ import useSWR from 'swr';
 type Props = {}
 
 const RoomDetails = ({params}:{params:{slug:string}}) => {
-    const slug = params.slug 
-    const fetchRoom = async () => getRoom(slug);
+  const [checkInDate,setCheckInDate] = useState<Date | null>(null)
+  const [checkOutDate,setCheckOutDate] = useState<Date | null>(null)
 
-    const { data: room, error, isLoading } = useSWR('/api/room', fetchRoom);
-    if(error) throw new Error("Cannot fetch data")
-    if(typeof room === 'undefined' && !isLoading) throw new Error("Cannot fetch data")
-    if(!room) return <LoadSpinner/>
-    // console.log(room);
-    
+  const [adults,setAdults] = useState<number>(1)
+  const [noOfChildren,setNoOfChildren] = useState<number>(0)
+
+  const slug = params.slug 
+  const fetchRoom = async () => getRoom(slug);
+
+  const { data: room, error, isLoading } = useSWR('/api/room', fetchRoom);
+  if(error) throw new Error("Cannot fetch data")
+  if(typeof room === 'undefined' && !isLoading) throw new Error("Cannot fetch data")
+  if(!room) return <LoadSpinner/>
+  // console.log(room);
+  
+  const calcMinCheckOutDate = () => {
+    if(checkInDate){
+      const nextDay = new Date(checkInDate)
+      nextDay.setDate(nextDay.getDate() + 1)
+      return nextDay
+    }
+    return null
+  }
+
+  const calcNoOfDays = () => {
+    if(!checkInDate || !checkOutDate) return toast.error("Please provide check-in / check-out dates")
+    const timeDiff = checkOutDate.getTime() - checkInDate.getTime()
+    const noOfDays = Math.ceil(timeDiff / (24 * 60 * 60 * 1000))
+    return noOfDays
+}
+
+  const handleBookNowClick = () => {
+    if(!checkInDate || !checkOutDate) return toast.error("Please provide check-in / check-out dates")
+
+    if(checkInDate > checkOutDate) return toast.error("Please choose a valid check-in period") 
+
+    const noOfDays = calcNoOfDays()
+
+    const hotelRoomSlug = room.slug.current
+
+    // Integrate stripe
+  }
+  
     
   return (
 
@@ -87,12 +123,35 @@ const RoomDetails = ({params}:{params:{slug:string}}) => {
 
                 {/* REVIEW SECTION */}
 
+                <div className='shadow dark:shadow-white rounded-lg p-6'>
+                  <div className='items-center mb-4'>
+                    <p className='md:text-lg font-semibold'>Customer Reviews</p>
+                  </div>
+                  <div className='grid grid-cols-1 md:grid-cols-2 gap-4'></div>
+                </div>
+
 
               </div>
             </div>
             <div className='md:col-span-4 rounded-xl shadow-lg dark:shadow-white sticky top-10 h-fit overflow-auto  '>
-              
+
               {/* BOOK ROOM CTA */}
+              <BookRoomCta 
+                price={room.price} 
+                discount={room.discount} 
+                specialNote={room.specialNote} 
+                checkInDate={checkInDate}
+                setCheckInDate={setCheckInDate}
+                checkOutDate={checkOutDate}
+                setCheckOutDate={setCheckOutDate}
+                calcMinCheckOutDate={calcMinCheckOutDate}
+                adults={adults}
+                setAdults={setAdults}
+                setNoOfChildren={setNoOfChildren}
+                noOfChildren={noOfChildren}
+                isBooked={room.isBooked}
+                handleBookNowClick={handleBookNowClick}
+              />
             </div>
           </div>
         </div>
