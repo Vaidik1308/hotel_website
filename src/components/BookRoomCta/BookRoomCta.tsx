@@ -141,7 +141,7 @@ const BookRoomCta = ({
         <button 
             disabled={isBooked} 
             className='btn-primary w-full mt-6 disabled:bg-gray-500 disabled:cursor-not-allowed'
-            onClick={handleBookNowClick()}
+            onClick={() => handleBookNowClick()}
         >
             {isBooked ? "Booked" : "Book Now"}
         </button>

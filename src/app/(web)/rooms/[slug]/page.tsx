@@ -3,6 +3,8 @@ import BookRoomCta from '@/components/BookRoomCta/BookRoomCta';
 import HotelPhotoGallery from '@/components/HotelPhotoGallery/HotelPhotoGallery';
 import LoadSpinner from '@/components/LoadSpinner/LoadSpinner';
 import { getRoom } from '@/libs/apis';
+import { getStripe } from '@/libs/stripe';
+import axios from 'axios';
 import React, { useState } from 'react'
 import toast from 'react-hot-toast';
 import { AiOutlineMedicineBox } from 'react-icons/ai';
@@ -41,20 +43,47 @@ const RoomDetails = ({params}:{params:{slug:string}}) => {
   const calcNoOfDays = () => {
     if(!checkInDate || !checkOutDate) return toast.error("Please provide check-in / check-out dates")
     const timeDiff = checkOutDate.getTime() - checkInDate.getTime()
-    const noOfDays = Math.ceil(timeDiff / (24 * 60 * 60 * 1000))
-    return noOfDays
+    const numberOfDays = Math.ceil(timeDiff / (24 * 60 * 60 * 1000))
+    return numberOfDays
 }
 
-  const handleBookNowClick = () => {
+  const handleBookNowClick = async () => {
     if(!checkInDate || !checkOutDate) return toast.error("Please provide check-in / check-out dates")
 
     if(checkInDate > checkOutDate) return toast.error("Please choose a valid check-in period") 
 
-    const noOfDays = calcNoOfDays()
+    const numberOfDays = calcNoOfDays()
 
     const hotelRoomSlug = room.slug.current
 
     // Integrate stripe
+
+    const stripe = await getStripe()
+
+    try {
+      const {data:stripeSession} = await axios.post('/api/stripe',{
+        checkInDate,
+        checkOutDate,
+        adults,
+        Children:noOfChildren,
+        numberOfDays,
+        hotelRoomSlug,
+
+      })
+      if(stripe){
+        const result = await stripe.redirectToCheckout({
+          sessionId:stripeSession.id
+        })
+
+        if(result.error){
+          toast.error("Payment Failed")
+        }
+      }
+    } catch (error) {
+      console.log("Error: ",error);
+      toast.error("An Error Occurred")
+      
+    }
   }
   
     
